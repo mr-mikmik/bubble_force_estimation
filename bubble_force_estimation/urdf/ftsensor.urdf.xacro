@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<robot name="ftsensor_mount" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:arg name="sensor_name" default="netft"/>
+    <xacro:arg name="tag_name" default="tag_0"/>
+    <xacro:arg name="tool_name" default="r15mm_ati_cylinder"/> <!-- Other values: bubbles, bubbles_flipped -->
+    <xacro:property name="tool_value" value="$(arg tool_name)"/>
+
+
+    <xacro:macro name="ftsensor_xacro">
+        <!-- Make a base link. -->
+        <link name="$(arg sensor_name)_base" type="fixed">
+            <inertial>
+                <mass value="0"/>
+                <inertia ixx="0"  ixy="0"  ixz="0" iyy="0" iyz="0" izz="0" />
+            </inertial>
+        </link>
+
+        <joint name="$(arg sensor_name)_sensor_joint" type="fixed">
+             <origin xyz="0 0 0" rpy="0 0 0"/>
+            <parent link="$(arg sensor_name)_base"/>
+            <child link="$(arg sensor_name)_sensor"/>
+        </joint>
+
+        <!-- ATI Gamma FT Sensor -->
+        <link name="$(arg sensor_name)_sensor">
+          <inertial>
+            <mass value="0.0"/> <!-- This is not the true mass -->
+            <origin xyz="0 0 0"/>
+            <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/> <!-- This are not the true inertia -->
+          </inertial>
+          <visual>
+<!--            <origin rpy="-1.57079 3.6651 3.1415" xyz="0.0 0 0"/>-->
+            <origin rpy="-1.57079 0 -0.52359" xyz="0.0 0 0"/>
+            <geometry>
+              <mesh filename="package://bubble_force_estimation/meshes/visual/ati_gamma_ft_sensor.stl" scale=".001 .001 .001"/>
+            </geometry>
+            <material name="grey">
+              <color rgba="0.5 0.5 0.5 1"/>
+            </material>
+          </visual>
+          <collision>
+            <origin rpy="-1.57079 0 -0.52359" xyz="0.0 0 0"/>
+            <geometry>
+              <mesh filename="package://bubble_force_estimation/meshes/collision/ati_gamma_ft_sensor.stl" scale=".001 .001 .001"/>
+            </geometry>
+          </collision>
+        </link>
+
+        <joint name="$(arg sensor_name)_support_joint" type="fixed">
+            <origin xyz="0 0 -0.028" rpy="0 0 0"/>
+            <parent link="$(arg sensor_name)_base"/>
+            <child link="$(arg sensor_name)_support"/>
+        </joint>
+
+        <!-- FT Sensor Mounting Support -->
+        <link name="$(arg sensor_name)_support">
+          <inertial>
+            <mass value="0.0"/> <!-- This is not the true mass -->
+            <origin xyz="0 0 0"/>
+            <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/> <!-- This are not the true inertia -->
+          </inertial>
+          <visual>
+            <origin rpy="3.1415 0 -1.96349" xyz="0.0 0 0"/>
+            <geometry>
+              <mesh filename="package://bubble_force_estimation/meshes/visual/ft_mount_with_tag_support.stl" scale=".001 .001 .001"/>
+            </geometry>
+            <material name="grey">
+              <color rgba="0.5 0.5 0.5 1"/>
+            </material>
+          </visual>
+          <collision>
+            <origin rpy="3.1415 0 -1.96349" xyz="0.0 0 0"/>
+            <geometry>
+              <mesh filename="package://bubble_force_estimation/meshes/collision/ft_mount_with_tag_support.stl" scale=".001 .001 .001"/>
+            </geometry>
+          </collision>
+        </link>
+
+        <joint name="$(arg sensor_name)_tool_joint" type="fixed">
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <parent link="$(arg sensor_name)_base"/>
+            <child link="$(arg sensor_name)_tool"/>
+        </joint>
+
+        <!-- FT Sensor Attached TOOL -->
+        <link name="$(arg sensor_name)_tool">
+          <inertial>
+            <mass value="0.0"/> <!-- This is not the true mass -->
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/> <!-- This are not the true inertia -->
+          </inertial>
+          <visual>
+            <origin rpy="-1.57079 0 -0.52359" xyz="0.0 0 0"/>
+            <geometry>
+              <mesh filename="package://bubble_force_estimation/meshes/visual/$(arg tool_name).stl" scale=".001 .001 .001"/>
+            </geometry>
+            <material name="grey">
+              <color rgba="0.5 0.5 0.5 1"/>
+            </material>
+          </visual>
+          <collision>
+            <origin rpy="-1.57079 0 -0.52359" xyz="0 0 0"/>
+            <geometry>
+              <mesh filename="package://bubble_force_estimation/meshes/collision/$(arg tool_name).stl" scale=".001 .001 .001"/>
+            </geometry>
+          </collision>
+        </link>
+
+        <!-- APRIL TAG FRAME NAME -->
+        <joint name="$(arg sensor_name)_tag_fake_joint" type="fixed">
+          <origin xyz="-0.07577 0 0" rpy="0 0 0"/>
+          <parent link="$(arg sensor_name)_support"/>
+          <child link="$(arg tag_name)"/>
+        </joint>
+        <link name="$(arg tag_name)">
+          <inertial>
+            <mass value="0.0"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+          </inertial>
+        </link>
+
+        <!-- APRIL TOOL FRAME NAME -->
+        <joint name="$(arg sensor_name)_tool_frame_fake_joint" type="fixed">
+          <origin xyz="0 0 0.066" rpy="0 0 0"/>
+          <parent link="$(arg sensor_name)_base"/>
+          <child link="$(arg sensor_name)_tool_frame"/>
+        </joint>
+        <link name="$(arg sensor_name)_tool_frame">
+          <inertial>
+            <mass value="0.0"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+          </inertial>
+        </link>
+
+        <!-- APRIL TOOL FRAME NAME -->
+        <joint name="$(arg sensor_name)_tool_frame_tip_fake_joint" type="fixed">
+          <origin xyz="0 0 0.126" rpy="0 0 0"/>
+          <parent link="$(arg sensor_name)_base"/>
+          <child link="$(arg sensor_name)_tool_tip_frame"/>
+        </joint>
+        <link name="$(arg sensor_name)_tool_tip_frame">
+          <inertial>
+            <mass value="0.0"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+          </inertial>
+        </link>
+    </xacro:macro>
+
+</robot>
