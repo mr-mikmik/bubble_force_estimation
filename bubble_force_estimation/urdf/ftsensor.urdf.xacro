@@ -3,7 +3,7 @@
 
     <xacro:arg name="sensor_name" default="netft"/>
     <xacro:arg name="tag_name" default="tag_0"/>
-    <xacro:arg name="tool_name" default="r15mm_ati_cylinder"/> <!-- Other values: bubbles, bubbles_flipped -->
+    <xacro:arg name="tool_name" default="r7p5mm_ati_cylinder"/> <!-- Other values: bubbles, bubbles_flipped -->
     <xacro:property name="tool_value" value="$(arg tool_name)"/>
 
 
@@ -48,7 +48,9 @@
         </link>
 
         <joint name="$(arg sensor_name)_support_joint" type="fixed">
-            <origin xyz="0 0 -0.028" rpy="0 0 0"/>
+            <!--  Choose one of this two configurations  -->
+            <origin xyz="0 0 -0.028" rpy="0 0 1.5707"/>
+<!--            <origin xyz="0 0 -0.028" rpy="0 0 -1.5707"/>-->
             <parent link="$(arg sensor_name)_base"/>
             <child link="$(arg sensor_name)_support"/>
         </joint>
