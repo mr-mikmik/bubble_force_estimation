@@ -6,6 +6,7 @@ from collections import OrderedDict
 import gym
 import copy
 import tf.transformations as tr
+import time
 
 from bubble_utils.bubble_data_collection.bubble_data_collection_base import BubbleDataCollectionBase
 from bubble_control.bubble_drawer.bubble_drawer import BubbleDrawer
@@ -16,7 +17,7 @@ from bubble_utils.bubble_data_collection.wrench_recorder import WrenchRecorder
 
 class BubbleForceDataCollection(BubbleDataCollectionBase):
 
-    def __init__(self, *args, sensor_name='netft', grasp_area_size=(.25, .25), move_length_limits=(0.01, 0.05), grasp_width_limits=(20,30), **kwargs):
+    def __init__(self, *args, sensor_name='netft', grasp_area_size=(.01, .01), move_length_limits=(0.001, 0.005), grasp_width_limits=(20,35), **kwargs):
         self.sensor_name = sensor_name
         self.grasp_area_size = np.asarray(grasp_area_size)
         self.move_length_limits = move_length_limits
@@ -67,7 +68,7 @@ class BubbleForceDataCollection(BubbleDataCollectionBase):
 
     def _get_legend_lines(self, data_params):
         legend_lines = []
-        undef_fc_i = data_params['undef_fc']
+        undef_fc_i = data_params['undeformed_fc']
         init_fc_i = data_params['initial_fc']
         final_fc_i = data_params['final_fc']
         grasp_force_i = data_params['grasp_force']
@@ -102,6 +103,7 @@ class BubbleForceDataCollection(BubbleDataCollectionBase):
         # compute orientation -- theta is the rotation along the x axis of the sensor
         # base_quat = np.array([0, 0, 0, 1.0])
         base_quat = tr.quaternion_from_euler(np.pi, 0, np.pi, axes='sxyz') # rpy
+        import pdb; pdb.set_trace()
         rotation_quat = tr.quaternion_about_axis(theta, axis=np.array([1, 0, 0]))
         target_quat = tr.quaternion_multiply(rotation_quat, base_quat)                          # in ref_frame # TODO: Account for the grasp frame orientation
         target_pose = np.concatenate([target_position, target_quat])
@@ -119,6 +121,7 @@ class BubbleForceDataCollection(BubbleDataCollectionBase):
         returns:
             data_params: <dict> containing the parameters and information of the collected data
         """
+        import pdb; pdb.set_trace()
         data_params = {}
 
         # Sample drawing parameters:
@@ -142,7 +145,8 @@ class BubbleForceDataCollection(BubbleDataCollectionBase):
 
         # calibrate
         self.ft_sensor.zero()
-        rospy.sleep(1.0)
+        print('sleeping ') # TODO: Remove
+        time.sleep(15.0)
         self._record(fc=undef_fc)
         # grasp
         grasp_width = action_i['grasp_width'] # TODO Consider using a force instead of a width
@@ -152,7 +156,7 @@ class BubbleForceDataCollection(BubbleDataCollectionBase):
         self._record(fc=init_fc)
 
         # move
-        final_point = start_point + action_i['length'] * np.array([np.cos(action_i['direction']), np.sin(action_i['direction'])])
+        final_point = action_i['length'] * np.array([np.cos(action_i['direction']), np.sin(action_i['direction'])])
         self._cartesian_delta_motion_sensor_tool_frame(final_point[0], final_point[1])
 
         # record final_state
