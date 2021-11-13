@@ -59,7 +59,7 @@ class BubbleForceDataCollection(BubbleDataCollectionBase):
     def _record(self, fc=None):
         # add the wrench of the FTSensor to the recorded topics
         self.ft_sensor_wrench_recorder.record(fc=fc, frame_names=self._get_wrench_recording_frames())
-        super()._record(fc=fc)
+        # super()._record(fc=fc)
 
     def _get_legend_column_names(self):
         action_keys = self._sample_action().keys()
@@ -107,7 +107,7 @@ class BubbleForceDataCollection(BubbleDataCollectionBase):
         rotation_quat = tr.quaternion_about_axis(theta, axis=np.array([1, 0, 0]))
         target_quat = tr.quaternion_multiply(rotation_quat, base_quat)                          # in ref_frame # TODO: Account for the grasp frame orientation
         target_pose = np.concatenate([target_position, target_quat])
-        self.med.plan_to_pose(self.med.arm_group, ee_link_name='grasp_frame', target_pose=list(target_pose), frame_id=ref_frame)
+        self.med.plan_to_pose(self.med.arm_group, ee_link_name='grasp_frame', target_pose=list(target_pose), frame_id=ref_frame, position_tol=0.0005)
 
     def _cartesian_delta_motion_sensor_tool_frame(self, delta_y, delta_z, ref_frame=None):
         if ref_frame is None:
