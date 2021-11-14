@@ -11,6 +11,7 @@ import time
 from bubble_utils.bubble_data_collection.bubble_data_collection_base import BubbleDataCollectionBase
 from bubble_control.bubble_drawer.bubble_drawer import BubbleDrawer
 from bubble_control.aux.action_sapces import ConstantSpace
+from victor_hardware_interface_msgs.msg import ControlMode
 from netft_utils.ft_sensor import FTSensor
 from bubble_utils.bubble_data_collection.wrench_recorder import WrenchRecorder
 
@@ -59,7 +60,7 @@ class BubbleForceDataCollection(BubbleDataCollectionBase):
     def _record(self, fc=None):
         # add the wrench of the FTSensor to the recorded topics
         self.ft_sensor_wrench_recorder.record(fc=fc, frame_names=self._get_wrench_recording_frames())
-        # super()._record(fc=fc)
+        super()._record(fc=fc)
 
     def _get_legend_column_names(self):
         action_keys = self._sample_action().keys()
@@ -103,7 +104,7 @@ class BubbleForceDataCollection(BubbleDataCollectionBase):
         # compute orientation -- theta is the rotation along the x axis of the sensor
         # base_quat = np.array([0, 0, 0, 1.0])
         base_quat = tr.quaternion_from_euler(np.pi, 0, np.pi, axes='sxyz') # rpy
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         rotation_quat = tr.quaternion_about_axis(theta, axis=np.array([1, 0, 0]))
         target_quat = tr.quaternion_multiply(rotation_quat, base_quat)                          # in ref_frame # TODO: Account for the grasp frame orientation
         target_pose = np.concatenate([target_position, target_quat])
@@ -113,7 +114,8 @@ class BubbleForceDataCollection(BubbleDataCollectionBase):
         if ref_frame is None:
             ref_frame = '{}_tool_frame'.format(self.sensor_name)
         delta_pos = np.array([0, delta_y, delta_z])
-        self.med.cartesian_delta_motion(delta_pos, ref_frame=ref_frame)
+        self.med.get_current_pose(ref_frame=ref_frame)
+        self.med.cartesian_delta_motion(delta_pos, ref_frame=ref_frame, step_size=0.01)
 
     def _collect_data_sample(self, params=None):
         """
@@ -121,9 +123,8 @@ class BubbleForceDataCollection(BubbleDataCollectionBase):
         returns:
             data_params: <dict> containing the parameters and information of the collected data
         """
-        import pdb; pdb.set_trace()
         data_params = {}
-
+        self.med.set_control_mode(ControlMode.JOINT_IMPEDANCE, vel=0.05)
         # Sample drawing parameters:
         is_valid_action = False
         action_i = None
@@ -142,11 +143,10 @@ class BubbleForceDataCollection(BubbleDataCollectionBase):
         self.med.gripper.move(100, 80)
         start_point = action_i['start_point']
         self._set_robot_position_sensor_tool_frame(action_i['start_point'][0], action_i['start_point'][0], action_i['start_theta'])
-
+        # self.med.set_control_mode(ControlMode.JOINT_IMPEDANCE, vel=0.1)
         # calibrate
         self.ft_sensor.zero()
-        print('sleeping ') # TODO: Remove
-        time.sleep(15.0)
+        time.sleep(2.0) # sleep because it takes some time for the sensor to zero. It takes 100 samples by default. If rate=100, about 1 second + safe time
         self._record(fc=undef_fc)
         # grasp
         grasp_width = action_i['grasp_width'] # TODO Consider using a force instead of a width
@@ -156,14 +156,18 @@ class BubbleForceDataCollection(BubbleDataCollectionBase):
         self._record(fc=init_fc)
 
         # move
-        final_point = action_i['length'] * np.array([np.cos(action_i['direction']), np.sin(action_i['direction'])])
-        self._cartesian_delta_motion_sensor_tool_frame(final_point[0], final_point[1])
+        # final_point = action_i['length'] * np.array([np.cos(action_i['direction']), np.sin(action_i['direction'])])
+        # self._cartesian_delta_motion_sensor_tool_frame(final_point[0], final_point[1])
+        final_point = start_point + action_i['length'] * np.array([np.cos(action_i['direction']), np.sin(action_i['direction'])])
+        self._set_robot_position_sensor_tool_frame(final_point[0], final_point[1], action_i['start_theta'])
 
+        time.sleep(1.0)
         # record final_state
         self._record(fc=final_fc)
 
         # reset motion
         self.med.gripper.open_gripper()
+        # self.med.set_control_mode(ControlMode.JOINT_POSITION, vel=0.1)
 
         data_params['undeformed_fc'] = undef_fc
         data_params['initial_fc'] = init_fc
