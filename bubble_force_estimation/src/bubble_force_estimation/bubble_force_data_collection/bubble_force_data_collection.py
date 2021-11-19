@@ -156,10 +156,15 @@ class BubbleForceDataCollection(BubbleDataCollectionBase):
         self._record(fc=init_fc)
 
         # move
-        # final_point = action_i['length'] * np.array([np.cos(action_i['direction']), np.sin(action_i['direction'])])
-        # self._cartesian_delta_motion_sensor_tool_frame(final_point[0], final_point[1])
-        final_point = start_point + action_i['length'] * np.array([np.cos(action_i['direction']), np.sin(action_i['direction'])])
-        self._set_robot_position_sensor_tool_frame(final_point[0], final_point[1], action_i['start_theta'])
+        delta_move = action_i['length'] * np.array([np.cos(action_i['direction']), np.sin(action_i['direction'])])
+        final_point = start_point + delta_move
+        # cartesian delta motion
+        # self._cartesian_delta_motion_sensor_tool_frame(delta_move[0], delta_move[1])
+        # joint control:
+        # self._set_robot_position_sensor_tool_frame(final_point[0], final_point[1], action_i['start_theta'])
+        # Cartesian impedance version
+        self.med.set_control_mode(ControlMode.CARTESIAN_IMPEDANCE, vel=0.1) # QUESTION: How to set the stiffness values?
+        self.med.move_delta_cartesian_impedance(self.med.arm_group, dx=0, dy=delta_move[0], target_z=, target_orientation=, step_size=0.01, blocking=True)
 
         time.sleep(1.0)
         # record final_state
