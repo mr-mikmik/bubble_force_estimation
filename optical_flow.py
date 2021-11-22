@@ -4,7 +4,7 @@ from scipy import signal
 """
     Takes two images and window_size, returns the optical flow by Lucas Kanade algorithm
     :params I1g:          grayscale image of the first frame
-    :params I2g:          grayscale image of the first frame
+    :params I2g:          grayscale image of the second frame
     :params window_size:  size of the window of pixels that are assumed to have the same displacement 
 """
 def optical_flow(I1g, I2g, window_size=5, normalize=False):
