@@ -1,6 +1,8 @@
 import numpy as np
+import torch
 
 from bubble_utils.bubble_datasets.bubble_dataset_base import BubbleDatasetBase
+from bubble_force_estimation.optical_flow.optical_flow import optical_flow, mean_optical_flow
 
 
 class BubbleForceDatasetBase(BubbleDatasetBase):
@@ -9,8 +11,8 @@ class BubbleForceDatasetBase(BubbleDatasetBase):
         self.wrench_frame = wrench_frame
         super().__init__(*args, **kwargs)
 
-    @property
-    def name(self):
+    @classmethod
+    def get_name(self):
         return 'bubble_force_dataset'
 
     def _load_bubble_sensor(self, fc, scene_name, key=''):
@@ -37,8 +39,8 @@ class BubbleForceDataset3States(BubbleForceDatasetBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @property
-    def name(self):
+    @classmethod
+    def get_name(self):
         return 'bubble_force_dataset_3states'
 
     def _get_sample(self, indx):
@@ -76,8 +78,8 @@ class BubbleForceDataset2States(BubbleForceDatasetBase):
     def __len__(self):
         return super().__len__() * 2
 
-    @property
-    def name(self):
+    @classmethod
+    def get_name(cls):
         return 'bubble_force_dataset_2states'
 
     def _get_sample(self, indx):
@@ -100,6 +102,24 @@ class BubbleForceDataset2States(BubbleForceDatasetBase):
         }
         sample.update(undef_sample)
         sample.update(def_sample)
-
+        # Add optical flow:
+        sample = self._add_flow(sample)
         return sample
 
+    def _add_flow(self, sample):
+        optical_flow_r = np.stack(optical_flow(sample['def_color_img_r'], sample['undef_color_img_r']))
+        optical_flow_l = np.stack(optical_flow(sample['def_color_img_l'], sample['undef_color_img_l']))
+        sample['optical_flow_r'] = optical_flow_r
+        sample['optical_flow_mean_r'] = np.mean(optical_flow_r, axis=(1, 2))
+        sample['optical_flow_l'] = optical_flow_l
+        sample['optical_flow_mean_l'] = np.mean(optical_flow_l, axis=(1, 2))
+        return sample
+
+
+
+# DEBUG:
+if __name__ == '__main__':
+    data_name = '/home/mmint/Desktop/bubble_force_data'
+    dataset = BubbleForceDataset2States(data_name=data_name, dtype=torch.float)
+    print(len(dataset))
+    d0 = dataset[0]

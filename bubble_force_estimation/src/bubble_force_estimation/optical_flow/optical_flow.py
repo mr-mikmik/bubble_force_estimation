@@ -1,6 +1,14 @@
 import numpy as np
+import cv2
+import os
+import sys
+from PIL import Image
+import matplotlib.pyplot as plt
 from scipy import signal
 
+project_path = os.path.join(os.path.dirname(os.path.abspath(__file__)).split('/bubble_force_estimation')[0], 'bubble_force_estimation')
+package_path = os.path.join(project_path, 'bubble_force_estimation', 'src', 'bubble_force_estimation', 'optical_flow')
+sys.path.append(project_path)
 
 def optical_flow(I1g, I2g, window_size=5, normalize=False):
     """
@@ -39,3 +47,25 @@ def optical_flow(I1g, I2g, window_size=5, normalize=False):
             u[i+int(w/2), j+int(w/2)] = nu[0]
             v[i+int(w/2), j+int(w/2)] = nu[1]
     return (u,v)
+
+
+def mean_optical_flow(I1g, I2g, window_size=5, normalize=False):
+    x_flow, y_flow = optical_flow(I1g, I2g, window_size=window_size, normalize=normalize)
+    x_flow_mean = np.mean(x_flow)
+    y_flow_mean = np.mean(y_flow)
+    mean_flow = np.array([x_flow_mean, y_flow_mean])
+    return mean_flow
+
+
+# DEBUG:
+def load_img(img_path):
+    imm = Image.open(img_path)
+    img_ar = np.asarray(imm.getdata()).reshape(imm.size[1], imm.size[0])
+    return img_ar
+
+if __name__ == '__main__':
+    test_path = os.path.join(package_path, 'test_imgs')
+    img1 = load_img(os.path.join(test_path, 'img_1.png'))
+    img2 = load_img(os.path.join(test_path, 'img_2.png'))
+    import pdb; pdb.set_trace()
+    flow = optical_flow(img1, img2)
