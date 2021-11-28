@@ -32,7 +32,8 @@ class BubbleForceDataCollection(BubbleDataCollectionBase):
         action_space_dict = OrderedDict()
         action_space_dict['start_point'] = gym.spaces.Box(-self.grasp_area_size, self.grasp_area_size, (2,), dtype=np.float64)  # random uniform (y, z) axes
         action_space_dict['start_theta'] = ConstantSpace(0.)
-        action_space_dict['direction'] = gym.spaces.Box(low=0, high=2*np.pi, shape=())
+        # action_space_dict['direction'] = gym.spaces.Box(low=0, high=2*np.pi, shape=())
+        action_space_dict['direction'] = gym.spaces.Box(low=np.pi*0.5, high=0.5*np.pi, shape=())
         action_space_dict['length'] = gym.spaces.Box(low=self.move_length_limits[0], high=self.move_length_limits[1], shape=())
         action_space_dict['grasp_width'] = gym.spaces.Box(low=self.grasp_width_limits[0], high=self.grasp_width_limits[1], shape=())
         action_space = gym.spaces.Dict(action_space_dict)
@@ -161,10 +162,10 @@ class BubbleForceDataCollection(BubbleDataCollectionBase):
         # cartesian delta motion
         # self._cartesian_delta_motion_sensor_tool_frame(delta_move[0], delta_move[1])
         # joint control:
-        # self._set_robot_position_sensor_tool_frame(final_point[0], final_point[1], action_i['start_theta'])
+        self._set_robot_position_sensor_tool_frame(final_point[0], final_point[1], action_i['start_theta'])
         # Cartesian impedance version
-        self.med.set_control_mode(ControlMode.CARTESIAN_IMPEDANCE, vel=0.1) # QUESTION: How to set the stiffness values?
-        self.med.move_delta_cartesian_impedance(self.med.arm_group, dx=0, dy=delta_move[0], target_z=, target_orientation=, step_size=0.01, blocking=True)
+        # self.med.set_control_mode(ControlMode.CARTESIAN_IMPEDANCE, vel=0.1) # QUESTION: How to set the stiffness values?
+        # self.med.move_delta_cartesian_impedance(self.med.arm_group, dx=0, dy=delta_move[0], target_z=, target_orientation=, step_size=0.01, blocking=True)
 
         time.sleep(1.0)
         # record final_state

@@ -19,7 +19,6 @@ if __name__ == '__main__':
     parser.add_argument('save_path', type=str, help='path to save the data')
     parser.add_argument('num_data', type=int, help='Number of data samples to be collected')
     parser.add_argument('--scene_name', type=str, default='drawing_data', help='scene name for the data. For organization purposes')
-    parser.add_argument('--prob_axis', type=float, default=0.08, help='probability for biasing the drawing along the axis')
     parser.add_argument('--grasp_area_size', type=float, default=(.01, .01), nargs=2, help='size of the y and z semiaxis of the inital grasp area')
     parser.add_argument('--move_length_limits', type=float, default=(.001, .002), nargs=2, help='(minimum_length, maximum_length) of the move')
     parser.add_argument('--grasp_width_limits', type=float, default=(20, 35), nargs=2, help='(minimum_width, maximum_width) of the grasp')
