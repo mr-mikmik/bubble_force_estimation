@@ -75,8 +75,10 @@ class BubbleForceDataset2States(BubbleForceDatasetBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def __len__(self):
-        return super().__len__() * 2
+    def _get_filecodes(self):
+        # duplicate the filecodes:
+        fcs = np.arange(2*len(super()._get_filecodes()))
+        return fcs
 
     @classmethod
     def get_name(cls):

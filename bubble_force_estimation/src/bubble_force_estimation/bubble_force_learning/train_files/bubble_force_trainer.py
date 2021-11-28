@@ -3,9 +3,13 @@ import torch
 
 from bubble_control.bubble_learning.train_files.parsed_trainer import ParsedTrainer
 
-
-from bubble_force_estimation.bubble_force_learning.models.optical_flow_mean_model import OpticalFlowMeanModel
+# Datasets:
 from bubble_force_estimation.bubble_force_learning.datasets.bubble_force_dataset import BubbleForceDataset2States
+# Models:
+from bubble_force_estimation.bubble_force_learning.models.optical_flow_mean_model import OpticalFlowMeanModel
+from bubble_force_estimation.bubble_force_learning.models.optical_flow_model import OpticalFlowModel
+from bubble_force_estimation.bubble_force_learning.models.img2force_model import BubbleImage2ForceModel
+
 
 
 if __name__ == '__main__':
@@ -23,7 +27,7 @@ if __name__ == '__main__':
         'batch_size': int,
         'val_batch_size': int
     }
-    Model = [OpticalFlowMeanModel]
+    Model = [OpticalFlowMeanModel, OpticalFlowModel, BubbleImage2ForceModel]
     Dataset = [BubbleForceDataset2States]
     parsed_trainer = ParsedTrainer(Model, Dataset, default_args=default_params, default_types=default_types)
 
