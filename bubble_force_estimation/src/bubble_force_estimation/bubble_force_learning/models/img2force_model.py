@@ -59,7 +59,6 @@ class BubbleImage2ForceModel(pl.LightningModule):
     def forward(self, img_r, img_l):
         bubble_comb_img = torch.stack([img_r, img_l], dim=-3)
         predicted_wrench = self.spring_model(bubble_comb_img)
-        predicted_wrench = predicted_wrench.unsqueeze(-2)
         return predicted_wrench
 
     def _get_sizes(self):
@@ -94,7 +93,7 @@ class BubbleImage2ForceModel(pl.LightningModule):
         return loss
 
     def _compute_loss(self, wrench_ext_pred, wrench_ext_gth):
-        wrench_prediction_loss = self.mse_loss(wrench_ext_pred, wrench_ext_gth)
+        wrench_prediction_loss = self.mse_loss(wrench_ext_pred, wrench_ext_gth.squeeze())
         loss = wrench_prediction_loss
         return loss
 

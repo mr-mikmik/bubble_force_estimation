@@ -93,7 +93,7 @@ class OpticalFlowModel(pl.LightningModule):
         return loss
 
     def _compute_loss(self, wrench_ext_pred, wrench_ext_gth):
-        wrench_prediction_loss = self.mse_loss(wrench_ext_pred, wrench_ext_gth)
+        wrench_prediction_loss = self.mse_loss(wrench_ext_pred, wrench_ext_gth.squeeze())
         loss = wrench_prediction_loss
         return loss
 
