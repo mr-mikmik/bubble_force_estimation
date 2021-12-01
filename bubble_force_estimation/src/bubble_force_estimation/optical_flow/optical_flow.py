@@ -48,6 +48,18 @@ def optical_flow(I1g, I2g, window_size=5, normalize=False):
             v[i+int(w/2), j+int(w/2)] = nu[1]
     return (u,v)
 
+def optical_flow_pyr(I1g, I2g, window_size=15, normalize=False):
+    """
+    Takes two images and window_size, returns the optical flow by Gunnar Farneback's algorithm
+    :params I1g:          grayscale image of the first frame
+    :params I2g:          grayscale image of the second frame
+    :params window_size:  size of the window of pixels that are assumed to have the same displacement
+    """
+    flow = cv2.calcOpticalFlowFarneback(img1, img2, None,0.5, 3, window_size, 3, 5, 1.2, 0)
+    u = flow[:,:,0]
+    v = flow[:,:,1]
+    return (u,v)
+
 
 def mean_optical_flow(I1g, I2g, window_size=5, normalize=False):
     x_flow, y_flow = optical_flow(I1g, I2g, window_size=window_size, normalize=normalize)
