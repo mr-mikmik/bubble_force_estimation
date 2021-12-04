@@ -75,4 +75,5 @@ def dot_detection_gs(I1g, bs1=3, bs2=30, C1=2, C2=10, save_figure=False):
     print("It took {:.2f} seconds".format(time.time()-curr_time)) 
     
     
-
+if __name__ == "__main__":
+    print("dot_detection.py")
