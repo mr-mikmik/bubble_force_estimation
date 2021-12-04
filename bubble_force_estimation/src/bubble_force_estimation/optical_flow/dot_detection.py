@@ -34,6 +34,7 @@ def dot_detection(I1g, block_size=15, C=7, visualize=False):
         plt.imshow(I1g)
         for dot in dots:
             plt.plot(dot[0], dot[1], 'ro', markersize=2)
+        plt.show()
             
     return dots
 
