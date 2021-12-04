@@ -36,3 +36,43 @@ def dot_detection(I1g, block_size=15, C=7, visualize=False):
             plt.plot(dot[0], dot[1], 'ro', markersize=2)
             
     return dots
+
+
+def dot_detection_gs(I1g, bs1=3, bs2=30, C1=2, C2=10, save_figure=False):
+    """
+        Takes one grayscale image, upper and lower limit of block_size and C
+        Runs grid search and visualize the results
+        :params I1g:           grayscale image of the image containing dots
+        :params bs1:           Lower limit of block size
+        :params bs2:           Upper limit of block size
+        :params C1:            Lower limit of C
+        :params C2:            Upper limit of C
+        :params save_figure:   if True, save the result as dot_detection_gs.png
+    """
+    
+    num_rows = np.ceil(np.ceil((bs2-bs1)/2)*(C2-C1)/3)
+    figure, axis = plt.subplots(int(num_rows), 3)
+    figure.set_size_inches(18.5, 6*num_rows)
+
+    curr_time = time.time()
+    count = 0
+    for block_size in range(bs1,bs2,2):
+        for C in range(C1,C2):
+            cur_axis = axis[int(np.floor(count/3)),count%3]
+            cur_axis.set_title('bs={}, C={}, count={}'.format(block_size, C, len(xcnts)))
+            cur_axis.imshow(cv2.resize(cv2.imread('data/1undeformed_image.png'), (200,200)))
+            dots = dot_detection(gray, block_size, C)
+            for dot in dots:
+                cur_axis.plot(dot[0], dot[1], 'ro', markersize=2)
+            count = count+1
+    
+    # Save figure or display results
+    if save_figure:
+        plt.savefig("dot_detection_gs.png")
+    else:
+        plt.show()
+
+    print("It took {:.2f} seconds".format(time.time()-curr_time)) 
+    
+    
+
