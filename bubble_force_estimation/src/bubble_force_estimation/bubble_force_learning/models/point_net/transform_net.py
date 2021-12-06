@@ -7,12 +7,13 @@ from bubble_force_estimation.bubble_force_learning.models.point_net.t_net import
 
 
 class Transform(nn.Module):
-    def __init__(self):
+    def __init__(self, num_in_features=3):
         super().__init__()
+        self.num_in_features = num_in_features
         self.input_transform = Tnet(k=3)
         self.feature_transform = Tnet(k=64)
 
-        self.conv1 = nn.Conv1d(3, 64, 1)
+        self.conv1 = nn.Conv1d(self.num_in_features, 64, 1)
         self.conv2 = nn.Conv1d(64, 128, 1)
         self.conv3 = nn.Conv1d(128, 1024, 1)
 

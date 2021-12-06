@@ -12,8 +12,8 @@ import sys
 from bubble_control.bubble_learning.models.aux.fc_module import FCModule
 
 
-class OpticalFlowMeanModel(pl.LightningModule):
-    """Model composed by a fc network that takes the mean of the optical flow and predicts the wrench"""
+class DeformationMeanModel(pl.LightningModule):
+    """Model composed by a fc network that takes the mean of the deformation and predicts the wrench"""
     def __init__(self, input_sizes, num_fcs=3, fc_h_dim=100, skip_layers=None, lr=1e-4, dataset_params=None, activation='relu'):
         super().__init__()
         self.input_sizes = input_sizes
@@ -31,7 +31,7 @@ class OpticalFlowMeanModel(pl.LightningModule):
 
     @classmethod
     def get_name(cls):
-        return 'optical_flow_mean_model'
+        return 'deformation_mean_model'
 
     @property
     def name(self):
@@ -39,7 +39,7 @@ class OpticalFlowMeanModel(pl.LightningModule):
 
     def _get_spring_model(self):
         sizes = self._get_sizes()
-        in_size = sizes['optical_flow_mean_r'] + sizes['optical_flow_mean_l']
+        in_size = sizes['deformations_mean_r'] + sizes['deformations_mean_l']
         out_size = sizes['def_wrench_ext']
         model_sizes = [in_size] + [self.fc_h_dim] * self.num_fcs + [out_size]
         spring_model = FCModule(sizes=model_sizes, skip_layers=self.skip_layers, activation=self.activation)
@@ -56,11 +56,11 @@ class OpticalFlowMeanModel(pl.LightningModule):
         return sizes
 
     def _step(self, batch, batch_idx, phase='train'):
-        optical_flow_mean_r = batch['optical_flow_mean_r']
-        optical_flow_mean_l = batch['optical_flow_mean_l']
+        deformations_mean_r = batch['deformations_mean_r']
+        deformations_mean_l = batch['deformations_mean_l']
         wrench_ext_gth = batch['def_wrench_ext']
         # Query the model:
-        wrench_ext_pred = self.forward(optical_flow_mean_r, optical_flow_mean_l)
+        wrench_ext_pred = self.forward(deformations_mean_r, deformations_mean_l)
         # Compute loss:
         loss = self._compute_loss(wrench_ext_pred, wrench_ext_gth)
 
@@ -85,4 +85,5 @@ class OpticalFlowMeanModel(pl.LightningModule):
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
         return optimizer
+
 

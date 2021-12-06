@@ -2,13 +2,15 @@ import numpy as np
 import torch
 
 from bubble_utils.bubble_datasets.bubble_dataset_base import BubbleDatasetBase
-from bubble_force_estimation.optical_flow.optical_flow import optical_flow, mean_optical_flow
+from bubble_force_estimation.optical_flow.optical_flow import optical_flow, mean_optical_flow, optical_flow_pyr
+from bubble_force_estimation.optical_flow.compute_deformations import compute_deformations
 
 
 class BubbleForceDatasetBase(BubbleDatasetBase):
 
-    def __init__(self, *args, wrench_frame='med_base', **kwargs):
+    def __init__(self, *args, wrench_frame='med_base', flow_method='pyramidal', **kwargs):
         self.wrench_frame = wrench_frame
+        self.flow_method = flow_method
         super().__init__(*args, **kwargs)
 
     @classmethod
@@ -29,6 +31,54 @@ class BubbleForceDatasetBase(BubbleDatasetBase):
         # We could add more things like tf information
         }
         return bubble_sample
+
+    def _add_flow(self, sample):
+        flow_functions = {
+            'pyramidal': optical_flow_pyr,
+            'basic': optical_flow
+        }
+        if not self.flow_method in flow_functions:
+            raise NotImplementedError('Flow method {} not yet implemented. Only: {}'.format(self.flow_method, flow_functions.keys()))
+        flow_function = flow_functions[self.flow_method]
+        optical_flow_r = np.stack(flow_function(sample['def_color_img_r'], sample['undef_color_img_r']))
+        optical_flow_l = np.stack(flow_function(sample['def_color_img_l'], sample['undef_color_img_l']))
+        sample['optical_flow_r'] = optical_flow_r
+        sample['optical_flow_mean_r'] = np.mean(optical_flow_r, axis=(1, 2))
+        sample['optical_flow_l'] = optical_flow_l
+        sample['optical_flow_mean_l'] = np.mean(optical_flow_l, axis=(1, 2))
+        return sample
+
+    def _add_deformations(self, sample):
+        # compute deformations
+        deformations_r, points_ref_r, points_def_r = compute_deformations(
+            img_1=sample['undef_color_img_r'],
+            img_2=sample['def_color_img_r'],
+            depth_1=sample['undef_depth_img_r'],
+            depth_2=sample['def_depth_img_r'],
+            flow=sample['optical_flow_r'],
+            camera_matrix=sample['camera_info_depth_r']['K'],
+            return_point_coordinates=True,
+        )
+        deformations_l, points_ref_l, points_def_l = compute_deformations(
+            img_1=sample['undef_color_img_l'],
+            img_2=sample['def_color_img_l'],
+            depth_1=sample['undef_depth_img_l'],
+            depth_2=sample['def_depth_img_l'],
+            flow=sample['optical_flow_l'],
+            camera_matrix=sample['camera_info_depth_l']['K'],
+            return_point_coordinates=True,
+        )
+
+        # add the deformations to the sample
+        sample['deformations_r'] = deformations_r
+        sample['points_ref_r'] = points_ref_r
+        sample['points_def_r'] = points_def_r
+        sample['deformations_mean_r'] = np.mean(deformations_r, axis=0)
+        sample['deformations_l'] = deformations_l
+        sample['points_ref_l'] = points_ref_l
+        sample['points_def_l'] = points_def_l
+        sample['deformations_mean_l'] = np.mean(deformations_l, axis=0)
+        return sample
 
 
 class BubbleForceDataset3States(BubbleForceDatasetBase):
@@ -106,16 +156,10 @@ class BubbleForceDataset2States(BubbleForceDatasetBase):
         sample.update(def_sample)
         # Add optical flow:
         sample = self._add_flow(sample)
+        sample = self._add_deformations(sample)
         return sample
 
-    def _add_flow(self, sample):
-        optical_flow_r = np.stack(optical_flow(sample['def_color_img_r'], sample['undef_color_img_r']))
-        optical_flow_l = np.stack(optical_flow(sample['def_color_img_l'], sample['undef_color_img_l']))
-        sample['optical_flow_r'] = optical_flow_r
-        sample['optical_flow_mean_r'] = np.mean(optical_flow_r, axis=(1, 2))
-        sample['optical_flow_l'] = optical_flow_l
-        sample['optical_flow_mean_l'] = np.mean(optical_flow_l, axis=(1, 2))
-        return sample
+
 
 
 
