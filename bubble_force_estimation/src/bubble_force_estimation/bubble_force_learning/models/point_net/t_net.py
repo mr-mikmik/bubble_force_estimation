@@ -7,6 +7,7 @@ import torch.nn.functional as F
 class Tnet(nn.Module):
    def __init__(self, k=3):
       super(Tnet, self).__init__()
+      self.k=k
       self.conv1 = nn.Conv1d(3, 64, 1)
       self.conv2 = nn.Conv1d(64, 128, 1)
       self.conv3 = nn.Conv1d(128, 1024, 1)
@@ -24,6 +25,7 @@ class Tnet(nn.Module):
 
    def forward(self, input):
       # input.shape == (output,n,3)
+      bs = input.size(0)
       output = input.size(0)
       mod = F.relu(self.bn1(self.conv1(input)))
       mod = F.relu(self.bn2(self.conv2(mod)))
