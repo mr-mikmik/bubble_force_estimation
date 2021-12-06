@@ -156,8 +156,64 @@ class BubbleForceDataset2States(BubbleForceDatasetBase):
         sample.update(def_sample)
         # Add optical flow:
         sample = self._add_flow(sample)
+        # sample = self._add_deformations(sample)
+        return sample
+
+
+class BubbleForceDataset2StatesWithDeformations(BubbleForceDataset2States):
+    @classmethod
+    def get_name(cls):
+        return 'bubble_force_dataset_2states_with_deformations'
+
+    def _get_sample(self, indx):
+        sample = super()._get_sample(indx)
         sample = self._add_deformations(sample)
         return sample
+
+
+class BubbleForceDataset2StatesWithFixedNumberDeformations(BubbleForceDataset2StatesWithDeformations):
+    def __init__(self, *args, num_deformations=50, **kwargs):
+        self.num_deformations = num_deformations
+        super().__init__(*args, **kwargs)
+
+    @classmethod
+    def get_name(cls):
+        return 'bubble_force_dataset_2states_with_fixed_number_deformations'
+
+    def _add_deformations(self, sample):
+        # compute deformations
+        deformations_r, points_ref_r, points_def_r = compute_deformations(
+            img_1=sample['undef_color_img_r'],
+            img_2=sample['def_color_img_r'],
+            depth_1=sample['undef_depth_img_r'],
+            depth_2=sample['def_depth_img_r'],
+            flow=sample['optical_flow_r'],
+            camera_matrix=sample['camera_info_depth_r']['K'],
+            return_point_coordinates=True,
+        )
+        deformations_l, points_ref_l, points_def_l = compute_deformations(
+            img_1=sample['undef_color_img_l'],
+            img_2=sample['def_color_img_l'],
+            depth_1=sample['undef_depth_img_l'],
+            depth_2=sample['def_depth_img_l'],
+            flow=sample['optical_flow_l'],
+            camera_matrix=sample['camera_info_depth_l']['K'],
+            return_point_coordinates=True,
+        )
+
+        # add the deformations to the sample
+        sample['deformations_r'] = deformations_r[:self.num_deformations]
+        sample['points_ref_r'] = points_ref_r[:self.num_deformations]
+        sample['points_def_r'] = points_def_r[:self.num_deformations]
+        sample['deformations_mean_r'] = np.mean(deformations_r, axis=0)
+        sample['deformations_l'] = deformations_l[:self.num_deformations]
+        sample['points_ref_l'] = points_ref_l[:self.num_deformations]
+        sample['points_def_l'] = points_def_l[:self.num_deformations]
+        sample['deformations_mean_l'] = np.mean(deformations_l, axis=0)
+        return sample
+
+
+
 
 
 # DEBUG:
