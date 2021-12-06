@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
+import time
 from matplotlib import pyplot as plt
+
 
 def dot_detection(I1g, block_size=15, C=7, visualize=False):
     """
@@ -13,7 +15,7 @@ def dot_detection(I1g, block_size=15, C=7, visualize=False):
     """
     
     # Adaptive threshold the image and find dot contours
-    threshed = cv2.adaptiveThreshold(gray,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,block_size,C)
+    threshed = cv2.adaptiveThreshold(I1g,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,block_size,C)
     cnts = cv2.findContours(threshed, cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)[-2]
     
     # Filter by dot area (usually not needed)
@@ -62,7 +64,7 @@ def dot_detection_gs(I1g, bs1=3, bs2=30, C1=2, C2=10, save_figure=False):
             cur_axis = axis[int(np.floor(count/3)),count%3]
             cur_axis.set_title('bs={}, C={}, count={}'.format(block_size, C, len(xcnts)))
             cur_axis.imshow(cv2.resize(cv2.imread('data/1undeformed_image.png'), (200,200)))
-            dots = dot_detection(gray, block_size, C)
+            dots = dot_detection(I1g, block_size, C)
             for dot in dots:
                 cur_axis.plot(dot[0], dot[1], 'ro', markersize=2)
             count = count+1

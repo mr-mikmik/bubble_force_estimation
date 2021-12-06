@@ -25,7 +25,6 @@ class OpticalFlowMeanModel(pl.LightningModule):
         self.activation = activation
 
         self.spring_model = self._get_spring_model()
-
         self.mse_loss = nn.MSELoss()
 
         self.save_hyperparameters()
