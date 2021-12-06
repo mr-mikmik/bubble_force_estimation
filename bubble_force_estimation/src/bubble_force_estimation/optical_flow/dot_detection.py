@@ -38,7 +38,7 @@ def dot_detection(I1g, block_size=15, C=7, visualize=False):
             plt.plot(dot[0], dot[1], 'ro', markersize=2)
         plt.show()
             
-    return dots
+    return dots, threshed
 
 
 def dot_detection_gs(I1g, bs1=3, bs2=30, C1=2, C2=10, save_figure=False):
@@ -64,7 +64,7 @@ def dot_detection_gs(I1g, bs1=3, bs2=30, C1=2, C2=10, save_figure=False):
             cur_axis = axis[int(np.floor(count/3)),count%3]
             cur_axis.set_title('bs={}, C={}, count={}'.format(block_size, C, len(xcnts)))
             cur_axis.imshow(cv2.resize(cv2.imread('data/1undeformed_image.png'), (200,200)))
-            dots = dot_detection(I1g, block_size, C)
+            dots, _ = dot_detection(I1g, block_size, C)
             for dot in dots:
                 cur_axis.plot(dot[0], dot[1], 'ro', markersize=2)
             count = count+1
