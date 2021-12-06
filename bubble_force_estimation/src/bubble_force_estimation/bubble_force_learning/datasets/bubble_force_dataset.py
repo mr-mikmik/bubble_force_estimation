@@ -127,7 +127,7 @@ class BubbleForceDataset2States(BubbleForceDatasetBase):
 
     def _get_filecodes(self):
         # duplicate the filecodes:
-        fcs = np.arange(2*len(super()._get_filecodes()))
+        fcs = np.arange(2 * len(super()._get_filecodes()))
         return fcs
 
     @classmethod
@@ -158,9 +158,6 @@ class BubbleForceDataset2States(BubbleForceDatasetBase):
         sample = self._add_flow(sample)
         sample = self._add_deformations(sample)
         return sample
-
-
-
 
 
 # DEBUG:

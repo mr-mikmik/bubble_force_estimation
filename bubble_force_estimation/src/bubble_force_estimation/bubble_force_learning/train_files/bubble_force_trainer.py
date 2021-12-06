@@ -10,7 +10,7 @@ from bubble_force_estimation.bubble_force_learning.models.optical_flow_mean_mode
 from bubble_force_estimation.bubble_force_learning.models.optical_flow_model import OpticalFlowModel
 from bubble_force_estimation.bubble_force_learning.models.img2force_model import BubbleImage2ForceModel
 from bubble_force_estimation.bubble_force_learning.models.deformation_mean_model import DeformationMeanModel
-from bubble_force_estimation.bubble_force_learning.models.deformation_model import DeformationModel
+from bubble_force_estimation.bubble_force_learning.models.deformation_model import DeformationOnlyModel, DeformationWithReferenceModel, DeformationAndPointsModel
 
 
 
@@ -30,7 +30,7 @@ if __name__ == '__main__':
         'batch_size': int,
         'val_batch_size': int
     }
-    Model = [OpticalFlowMeanModel, OpticalFlowModel, BubbleImage2ForceModel, DeformationMeanModel, DeformationModel]
+    Model = [OpticalFlowMeanModel, OpticalFlowModel, BubbleImage2ForceModel, DeformationMeanModel, DeformationOnlyModel, DeformationWithReferenceModel, DeformationAndPointsModel]
     Dataset = [BubbleForceDataset2States]
     parsed_trainer = ParsedTrainer(Model, Dataset, default_args=default_params, default_types=default_types)
 
