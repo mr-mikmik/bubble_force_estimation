@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.spatial import KDTree
 
 from bubble_force_estimation.optical_flow.optical_flow import optical_flow, mean_optical_flow, optical_flow_pyr
 from bubble_force_estimation.optical_flow.dot_detection import dot_detection
@@ -22,17 +23,23 @@ def estimate_correspondences(I1g, I2g, flow, cos_sim_th=0.8, visualize=False):
     dots1, threshed1 = dot_detection(I1g)
     dots2, threshed2 = dot_detection(I2g)
     
-    # Find flow
-    u, v = flow
-    
+    # swap axes in dots:
+    dots1 = dots1[:,[1,0]]
+    dots2 = dots2[:,[1,0]]
+
+    tree = KDTree(dots2)
+
     # Find correspondence
     for dot1 in dots1:
         i = int(dot1[0])
         j = int(dot1[1])
-        est_flow = [u[i, j], v[i, j]]
+        # est_flow = [u[i, j], v[i, j]]
+        est_flow = flow[:,i,j]
         dest = dot1 + est_flow
-        dist = [np.linalg.norm(dest-dot2) for dot2 in dots2]
-        closest = dots2[np.argmin(dist)]
+        # dist = [np.linalg.norm(dest-dot2) for dot2 in dots2]
+        # closest = dots2[np.argmin(dist)]
+        dist, indxs = tree.query(dest)
+        closest = dots2[indxs]
         true_flow = closest - dot1
         
         # When the correspondence is itself
@@ -56,6 +63,9 @@ def estimate_correspondences(I1g, I2g, flow, cos_sim_th=0.8, visualize=False):
             plt.arrow(i, j, u[i, j], v[i, j], head_width=1, head_length=2, color='blue')
         plt.show()
         
+    points1 = points1.astype(np.int64)
+    points2 = points2.astype(np.int64)
+    
     return points1, points2
 
 

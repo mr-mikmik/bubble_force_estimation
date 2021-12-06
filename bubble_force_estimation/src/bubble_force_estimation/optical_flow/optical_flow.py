@@ -56,7 +56,7 @@ def optical_flow_pyr(I1g, I2g, window_size=15, normalize=False):
     :params I2g:          grayscale image of the second frame
     :params window_size:  size of the window of pixels that are assumed to have the same displacement
     """
-    flow = cv2.calcOpticalFlowFarneback(img1, img2, None, 0.5, 3, window_size, 3, 5, 1.2, 0)
+    flow = cv2.calcOpticalFlowFarneback(I1g, I2g, None, 0.5, 3, window_size, 3, 5, 1.2, 0)
     u = flow[:,:,0]
     v = flow[:,:,1]
     return (u,v)

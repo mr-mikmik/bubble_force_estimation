@@ -15,6 +15,7 @@ def dot_detection(I1g, block_size=15, C=7, visualize=False):
     """
     
     # Adaptive threshold the image and find dot contours
+    I1g = I1g.astype(np.uint8)
     threshed = cv2.adaptiveThreshold(I1g,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,block_size,C)
     cnts = cv2.findContours(threshed, cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)[-2]
     
