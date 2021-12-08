@@ -24,7 +24,8 @@ if __name__ == '__main__':
         'num_fcs': 2,
         'fc_h_dim': 50,
         'dtype': torch.float32,
-        'model': OpticalFlowMeanModel.get_name()
+        'model': OpticalFlowMeanModel.get_name(),
+        'num_deformations': 100,
     }
     default_types = {
         'batch_size': int,

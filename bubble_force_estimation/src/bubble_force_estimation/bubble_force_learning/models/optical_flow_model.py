@@ -47,13 +47,13 @@ class OpticalFlowModel(pl.LightningModule):
         img_size = sizes['flow']  # (C_in, W_in, H_in)
         out_size = sizes['def_wrench_ext']
         spring_model = ImageEncoder(input_size=img_size,
-                                   latent_size=out_size,
-                                   num_convs=self.num_convs,
-                                   conv_h_sizes=self.conv_hidden_sizes,
-                                   ks=self.ks,
-                                   num_fcs=self.num_fcs,
-                                   fc_hidden_size=self.fc_h_dim,
-                                   activation=self.activation)
+                                    latent_size=out_size,
+                                    num_convs=self.num_convs,
+                                    conv_h_sizes=self.conv_hidden_sizes,
+                                    ks=self.ks,
+                                    num_fcs=self.num_fcs,
+                                    fc_hidden_size=self.fc_h_dim,
+                                    activation=self.activation)
         return spring_model
 
     def forward(self, optical_flow_r, optical_flow_l):
