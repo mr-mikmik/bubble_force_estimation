@@ -43,7 +43,8 @@ class DeformationModelBase(pl.LightningModule):
         return spring_model_pointnet
 
     def forward(self, deformations):
-        predicted_wrench = self.spring_model(deformations)
+        def_swapped = torch.swapaxes(deformations,1,2)
+        predicted_wrench,_ , _ = self.spring_model(def_swapped)
         return predicted_wrench
 
     def _get_sizes(self):
@@ -90,8 +91,6 @@ class DeformationOnlyModel(DeformationModelBase):
     """
     Only takes the deformations, without refernce points
     """
-    def __init__(*args, **kwargs):
-        super().__init__(*args, **kwargs)
 
     @classmethod
     def get_name(cls):
@@ -100,7 +99,7 @@ class DeformationOnlyModel(DeformationModelBase):
     def _get_deformations(self, batch):
         deformations_r = batch['deformations_r']
         deformations_l = batch['deformations_l']
-        deformations = torch.concatenate([deformations_r, deformations_l], axis=-2)
+        deformations = torch.cat([deformations_r, deformations_l], dim=-2)
         return deformations
 
     def _get_sizes(self):
@@ -125,9 +124,9 @@ class DeformationWithReferenceModel(DeformationModelBase):
         deformations_l = batch['deformations_l']
         points_ref_r = batch['points_ref_r']
         points_ref_l = batch['points_ref_l']
-        def_r = torch.concatenate([deformations_r, points_ref_r], axis=-1)
-        def_l = torch.concatenate([deformations_l, points_ref_l], axis=-1)
-        deformations = torch.concatenate([def_r, def_l], axis=-2)
+        def_r = torch.cat([deformations_r, points_ref_r], dim=-1)
+        def_l = torch.cat([deformations_l, points_ref_l], dim=-1)
+        deformations = torch.cat([def_r, def_l], dim=-2)
         return deformations
 
     def _get_sizes(self):
@@ -154,9 +153,9 @@ class DeformationAndPointsModel(DeformationModelBase):
         points_ref_l = batch['points_ref_l']
         points_def_r = batch['points_def_r']
         points_def_l = batch['points_def_l']
-        def_r = torch.concatenate([deformations_r, points_ref_r, points_def_r], axis=-1)
-        def_l = torch.concatenate([deformations_l, points_ref_l, points_def_l], axis=-1)
-        deformations = torch.concatenate([def_r, def_l], axis=-2)
+        def_r = torch.cat([deformations_r, points_ref_r, points_def_r], dim=-1)
+        def_l = torch.cat([deformations_l, points_ref_l, points_def_l], dim=-1)
+        deformations = torch.cat([def_r, def_l], dim=-2)
         return deformations
 
     def _get_sizes(self):

@@ -45,8 +45,8 @@ class PointNetBase(nn.Module):
 
 
 class RegressionPointNet(PointNetBase):
-    def __init__(self, num_in_features, classes=10):
-        super().__init__(num_in_features=num_in_features, out_size=classes)
+    def __init__(self, num_in_features, out_size=10):
+        super().__init__(num_in_features=num_in_features, out_size=out_size)
 
 
 class ClassificationPointNet(PointNetBase):
