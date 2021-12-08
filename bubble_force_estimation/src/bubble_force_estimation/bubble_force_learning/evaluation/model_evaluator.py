@@ -44,6 +44,7 @@ class DatasetEvaluator(object):
         evaluate_loader = DataLoader(self.dataset, batch_size=len(self.dataset),
                                      num_workers=8)  # use all dataset to evaluate it
         # TODO: Check if the model is logging, avoid to log anything
+        import pdb; pdb.set_trace()
         losses = []
         for b_i, eval_batch in enumerate(evaluate_loader):
             loss_i = model.validation_step(eval_batch, batch_idx=0)
@@ -67,14 +68,23 @@ if __name__ == '__main__':
     data_name = '/home/mik/Desktop/bubble_force_data'
     model_load_path = data_name
 
-    dataset = BubbleForceDataset2StatesWithFixedNumberDeformations(data_name=data_name, num_deformations=100)# TODO Fill the values
+    scene_names = 'r15'
+    scene_scores = {}
+    for scene_name in scene_names:
+        dataset = BubbleForceDataset2StatesWithFixedNumberDeformations(data_name=data_name, num_deformations=100, scene_name=)# TODO Fill the values
 
-    model_dict = {
-        OpticalFlowMeanModel: 3,
-        OpticalFlowModel: 0,
-        DeformationMeanModel: 2,
-    }
+        model_dict = {
+            BubbleImage2ForceModel: 0,
+            OpticalFlowMeanModel: 3,
+            OpticalFlowModel: 0,
+            DeformationMeanModel: 2,
+            DeformationOnlyModel: 0,
+            DeformationWithReferenceModel: 4,
+            DeformationAndPointsModel: 0,
+        }
 
-    de = DatasetEvaluator(dataset, model_load_path, list(model_dict.keys()), list(model_dict.values()))
-    scores = de.evaluate()
-    print('SCORES: \n', scores)
+        de = DatasetEvaluator(dataset, model_load_path, list(model_dict.keys()), list(model_dict.values()))
+        scores = de.evaluate()
+        print('\n{} SCORES: \n{}'.format(scene_name, scores))
+        scene_scores[scene_name] = scores
+
