@@ -65,14 +65,16 @@ class DatasetEvaluator(object):
 if __name__ == '__main__':
     from bubble_force_estimation.bubble_force_learning.datasets.bubble_force_dataset import BubbleForceDataset2StatesWithFixedNumberDeformations # TODO: Add more datasets
     data_name = '/home/mik/Desktop/bubble_force_data'
+    model_load_path = data_name
 
-    dataset = BubbleForceDataset2StatesWithFixedNumberDeformations()# TODO Fill the values
+    dataset = BubbleForceDataset2StatesWithFixedNumberDeformations(data_name=data_name, num_deformations=100)# TODO Fill the values
 
     model_dict = {
         OpticalFlowMeanModel: 3,
         OpticalFlowModel: 0,
+        DeformationMeanModel: 2,
     }
 
-    de = DatasetEvaluator(dataset, data_name, list(model_dict.keys()), list(model_dict.values()))
+    de = DatasetEvaluator(dataset, model_load_path, list(model_dict.keys()), list(model_dict.values()))
     scores = de.evaluate()
     print('SCORES: \n', scores)

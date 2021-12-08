@@ -112,8 +112,6 @@ class DeformationWithReferenceModel(DeformationModelBase):
     """
     Only takes the deformations, without refernce points
     """
-    def __init__(*args, **kwargs):
-        super().__init__(*args, **kwargs)
 
     @classmethod
     def get_name(cls):
@@ -139,9 +137,6 @@ class DeformationAndPointsModel(DeformationModelBase):
     """
     Only takes the deformations, without refernce points
     """
-    def __init__(*args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     @classmethod
     def get_name(cls):
         return 'deformation_and_points_model'

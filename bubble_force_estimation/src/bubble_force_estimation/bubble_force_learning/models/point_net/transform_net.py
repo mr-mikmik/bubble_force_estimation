@@ -10,7 +10,7 @@ class Transform(nn.Module):
     def __init__(self, num_in_features=3):
         super().__init__()
         self.num_in_features = num_in_features
-        self.input_transform = Tnet(k=3)
+        self.input_transform = Tnet(k=self.num_in_features)
         self.feature_transform = Tnet(k=64)
 
         self.conv1 = nn.Conv1d(self.num_in_features, 64, 1)
