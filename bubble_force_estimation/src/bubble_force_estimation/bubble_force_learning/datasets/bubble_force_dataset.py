@@ -123,11 +123,13 @@ class BubbleForceDataset2States(BubbleForceDatasetBase):
     """
 
     def __init__(self, *args, **kwargs):
+        self.true_fcs = None
         super().__init__(*args, **kwargs)
 
     def _get_filecodes(self):
         # duplicate the filecodes:
-        fcs = np.arange(2 * len(super()._get_filecodes()))
+        self.true_fcs = super()._get_filecodes()
+        fcs = np.arange(2 * len(self.true_fcs))
         return fcs
 
     @classmethod
@@ -137,7 +139,8 @@ class BubbleForceDataset2States(BubbleForceDatasetBase):
     def _get_sample(self, indx):
         # fc: index of the line in the datalegend (self.dl) of the sample
         true_indx = indx // 2
-        dl_line = self.dl.iloc[true_indx]
+        true_fc = self.true_fcs[true_indx]
+        dl_line = self.dl.iloc[true_fc]
         scene_name = dl_line['Scene']
         undef_fc = dl_line['UndeformedFC']
         if indx % 2 == 0:
