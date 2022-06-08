@@ -10,7 +10,7 @@ import time
 
 from bubble_utils.bubble_data_collection.bubble_data_collection_base import BubbleDataCollectionBase
 from bubble_control.bubble_drawer.bubble_drawer import BubbleDrawer
-from bubble_control.aux.action_sapces import ConstantSpace
+from bubble_control.aux.action_spaces import ConstantSpace
 from victor_hardware_interface_msgs.msg import ControlMode
 from netft_utils.ft_sensor import FTSensor
 from bubble_utils.bubble_data_collection.wrench_recorder import WrenchRecorder
@@ -98,7 +98,7 @@ class BubbleForceDataCollection(BubbleDataCollectionBase):
         tool_pose_rf = self.med._matrix_to_pose(rf_T_tf)
         return tool_pose_rf
 
-    def _set_robot_position_sensor_tool_frame(self, y, z, theta, ref_frame=None):
+    def _set_robot_position_sensor_tool_frame(self, y, z, theta, ref_frame=None, supervise=False):
         if ref_frame is None:
             ref_frame = '{}_tool_frame'.format(self.sensor_name)
         target_position = np.array([0, y, z]) # in ref_frame
@@ -109,7 +109,22 @@ class BubbleForceDataCollection(BubbleDataCollectionBase):
         rotation_quat = tr.quaternion_about_axis(theta, axis=np.array([1, 0, 0]))
         target_quat = tr.quaternion_multiply(rotation_quat, base_quat)                          # in ref_frame # TODO: Account for the grasp frame orientation
         target_pose = np.concatenate([target_position, target_quat])
-        self.med.plan_to_pose(self.med.arm_group, ee_link_name='grasp_frame', target_pose=list(target_pose), frame_id=ref_frame, position_tol=0.0005)
+        self.med.set_execute(False)
+        plan_found = False
+        while not plan_found:
+            planning_result = self.med.plan_to_pose(self.med.arm_group, ee_link_name='grasp_frame', target_pose=list(target_pose), frame_id=ref_frame, position_tol=0.0005)
+            trajectory_points = planning_result.planning_result.plan.joint_trajectory.points
+            trajectory_times = [p.time_from_start.to_sec() for p in trajectory_points]
+            num_trajectory_points = len(trajectory_points)
+            total_time = trajectory_times[-1]
+            # print('Num points: {} | Total time: {}'.format(num_trajectory_points, total_time))
+            if num_trajectory_points < 5 or total_time < 4. or supervise == False:
+                plan_found = True
+            else:
+                print('Avoiding found plan with num points: {} | Total time: {} --- REPLANNING'.format(num_trajectory_points, total_time))
+
+        self.med.set_execute(True)
+        execution_result = self.med.follow_arms_joint_trajectory(planning_result.planning_result.plan.joint_trajectory)
 
     def _cartesian_delta_motion_sensor_tool_frame(self, delta_y, delta_z, ref_frame=None):
         if ref_frame is None:
@@ -162,7 +177,7 @@ class BubbleForceDataCollection(BubbleDataCollectionBase):
         # cartesian delta motion
         # self._cartesian_delta_motion_sensor_tool_frame(delta_move[0], delta_move[1])
         # joint control:
-        self._set_robot_position_sensor_tool_frame(final_point[0], final_point[1], action_i['start_theta'])
+        self._set_robot_position_sensor_tool_frame(final_point[0], final_point[1], action_i['start_theta'], supervise=True)
         # Cartesian impedance version
         # self.med.set_control_mode(ControlMode.CARTESIAN_IMPEDANCE, vel=0.1) # QUESTION: How to set the stiffness values?
         # self.med.move_delta_cartesian_impedance(self.med.arm_group, dx=0, dy=delta_move[0], target_z=, target_orientation=, step_size=0.01, blocking=True)
