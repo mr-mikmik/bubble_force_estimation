@@ -71,7 +71,7 @@ if __name__ == '__main__':
     scene_names = 'r15'
     scene_scores = {}
     for scene_name in scene_names:
-        dataset = BubbleForceDataset2StatesWithFixedNumberDeformations(data_name=data_name, num_deformations=100, scene_name=)# TODO Fill the values
+        dataset = BubbleForceDataset2StatesWithFixedNumberDeformations(data_name=data_name, num_deformations=100, scene_name=None)# TODO Fill the values
 
         model_dict = {
             BubbleImage2ForceModel: 0,
