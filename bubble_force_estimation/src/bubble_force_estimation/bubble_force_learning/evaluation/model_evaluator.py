@@ -44,7 +44,6 @@ class DatasetEvaluator(object):
         evaluate_loader = DataLoader(self.dataset, batch_size=len(self.dataset),
                                      num_workers=8)  # use all dataset to evaluate it
         # TODO: Check if the model is logging, avoid to log anything
-        import pdb; pdb.set_trace()
         losses = []
         for b_i, eval_batch in enumerate(evaluate_loader):
             loss_i = model.validation_step(eval_batch, batch_idx=0)
@@ -64,15 +63,15 @@ class DatasetEvaluator(object):
 # Test:
 
 if __name__ == '__main__':
-    from bubble_force_estimation.bubble_force_learning.datasets.bubble_force_dataset import BubbleForceDataset2StatesWithFixedNumberDeformations # TODO: Add more datasets
-    data_name = '/home/mik/Desktop/bubble_force_data'
-    model_load_path = data_name
+    from bubble_force_estimation.bubble_force_learning.datasets.bubble_force_dataset import BubbleForceDataset2StatesWithFixedNumberDeformations
+    data_name = '/home/mik/Desktop/bubble_force_generalization_data'
+    model_load_path = '/home/mik/Desktop/bubble_force_data' 
 
-    scene_names = 'r15'
+    scene_names = ['r10', 'r7p5', 'r5', 'r2p5', 'cr2p5r10', 'cr2p5r15', 'cr5r15'] # TODO: Add more scene names
     scene_scores = {}
     for scene_name in scene_names:
-        dataset = BubbleForceDataset2StatesWithFixedNumberDeformations(data_name=data_name, num_deformations=100, scene_name=None)# TODO Fill the values
-
+        dataset = BubbleForceDataset2StatesWithFixedNumberDeformations(data_name=data_name, num_deformations=100, scene_name=scene_name, dtype=torch.float32)# TODO Fill the values
+        
         model_dict = {
             BubbleImage2ForceModel: 0,
             OpticalFlowMeanModel: 3,
@@ -85,6 +84,8 @@ if __name__ == '__main__':
 
         de = DatasetEvaluator(dataset, model_load_path, list(model_dict.keys()), list(model_dict.values()))
         scores = de.evaluate()
-        print('\n{} SCORES: \n{}'.format(scene_name, scores))
+        print('\n{} SCORES:'.format(scene_name))
+        for k, v in scores.items():
+            print('\t{}: {}'.format(k, v))
         scene_scores[scene_name] = scores
 
