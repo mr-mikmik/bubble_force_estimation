@@ -71,6 +71,7 @@ if __name__ == '__main__':
     scene_scores = {}
     for scene_name in scene_names:
         dataset = BubbleForceDataset2StatesWithFixedNumberDeformations(data_name=data_name, num_deformations=100, scene_name=scene_name, dtype=torch.float32)# TODO Fill the values
+        
         model_dict = {
             BubbleImage2ForceModel: 0,
             OpticalFlowMeanModel: 3,
