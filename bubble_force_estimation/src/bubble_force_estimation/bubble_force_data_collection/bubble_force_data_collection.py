@@ -10,7 +10,7 @@ import time
 
 from bubble_utils.bubble_data_collection.bubble_data_collection_base import BubbleDataCollectionBase
 from bubble_control.bubble_drawer.bubble_drawer import BubbleDrawer
-from bubble_control.aux.action_sapces import ConstantSpace
+from bubble_control.aux.action_spaces import ConstantSpace
 from victor_hardware_interface_msgs.msg import ControlMode
 from netft_utils.ft_sensor import FTSensor
 from bubble_utils.bubble_data_collection.wrench_recorder import WrenchRecorder
