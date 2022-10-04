@@ -22,10 +22,10 @@ class BubbleForceDatasetBase(BubbleDatasetBase):
             key = '{}_'.format(key)
 
         bubble_sample = {
-            '{}color_img_r'.format(key) : self._load_color_img(fc=fc, scene_name=scene_name, camera_name='right'),
-            '{}color_img_l'.format(key) : self._load_color_img(fc=fc, scene_name=scene_name, camera_name='left'),
-            '{}depth_img_r'.format(key) : self._load_depth_img(fc=fc, scene_name=scene_name, camera_name='right'),
-            '{}depth_img_l'.format(key) : self._load_depth_img(fc=fc, scene_name=scene_name, camera_name='left'),
+            '{}color_img_r'.format(key) : self._load_bubble_color_img(fc=fc, scene_name=scene_name, camera_name='right'),
+            '{}color_img_l'.format(key) : self._load_bubble_color_img(fc=fc, scene_name=scene_name, camera_name='left'),
+            '{}depth_img_r'.format(key) : self._load_bubble_depth_img(fc=fc, scene_name=scene_name, camera_name='right'),
+            '{}depth_img_l'.format(key) : self._load_bubble_depth_img(fc=fc, scene_name=scene_name, camera_name='left'),
             '{}wrench_ext'.format(key) : self._get_wrench(fc=fc, scene_name=scene_name, frame_id=self.wrench_frame, wrench_name='external_wrenches'),
             '{}wrench_robot'.format(key) : self._get_wrench(fc=fc, scene_name=scene_name, frame_id=self.wrench_frame, wrench_name='wrenches')
         # We could add more things like tf information
@@ -106,8 +106,8 @@ class BubbleForceDataset3States(BubbleForceDatasetBase):
         final_sample = self._load_bubble_sensor(final_fc, scene_name=scene_name, key='final')
 
         sample = {
-            'camera_info_depth_r': self._load_camera_info_depth(scene_name, camera_name='right'),
-            'camera_info_depth_l': self._load_camera_info_depth(scene_name, camera_name='left'),
+            'camera_info_depth_r': self._load_bubble_camera_info_depth(scene_name, camera_name='right'),
+            'camera_info_depth_l': self._load_bubble_camera_info_depth(scene_name, camera_name='left'),
         }
         sample.update(undef_sample)
         sample.update(init_sample)
@@ -152,8 +152,8 @@ class BubbleForceDataset2States(BubbleForceDatasetBase):
         def_sample = self._load_bubble_sensor(def_fc, scene_name=scene_name, key='def')
 
         sample = {
-            'camera_info_depth_r': self._load_camera_info_depth(scene_name, camera_name='right'),
-            'camera_info_depth_l': self._load_camera_info_depth(scene_name, camera_name='left'),
+            'camera_info_depth_r': self._load_bubble_camera_info_depth(scene_name, camera_name='right'),
+            'camera_info_depth_l': self._load_bubble_camera_info_depth(scene_name, camera_name='left'),
         }
         sample.update(undef_sample)
         sample.update(def_sample)
