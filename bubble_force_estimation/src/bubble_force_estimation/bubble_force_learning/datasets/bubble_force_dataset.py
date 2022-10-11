@@ -126,9 +126,9 @@ class BubbleForceDataset2States(BubbleForceDatasetBase):
         self.true_fcs = None
         super().__init__(*args, **kwargs)
 
-    def _get_filecodes(self):
+    def _get_sample_codes(self):
         # duplicate the filecodes:
-        self.true_fcs = super()._get_filecodes()
+        self.true_fcs = super()._get_sample_codes()
         fcs = np.arange(2 * len(self.true_fcs))
         return fcs
 
