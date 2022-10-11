@@ -13,15 +13,16 @@ class FTURDFGenerator(object):
     """
     # TODO: Add option to handle multiple tools
 
-    def __init__(self, tool_name='r7p5mm_ati_cylinder'):
+    def __init__(self, tool_name='r7p5mm_ati_cylinder', output='log'):
         self.package_name = 'bubble_force_estimation'
         self.launch_file = 'ft_urdf.launch' # name of the file to be launched inside self.package_name
         self.node_name = 'ft_urdf_generator'
         self.tool_name = tool_name
+        self.output = output # 'log' for file logging, 'screen' for terminal logging
         self.proc = None
 
     def _start_node(self):
-        command = 'roslaunch {0} {1} tool_name:={2}'.format(self.package_name, self.launch_file, self.tool_name)
+        command = f'roslaunch {self.package_name} {self.launch_file} tool_name:={self.tool_name}  --{self.output}'
         self.proc = subprocess.Popen(command, shell=True)
 
     def _close_node(self):
