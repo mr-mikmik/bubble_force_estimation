@@ -23,7 +23,7 @@ class FTURDFGenerator(object):
 
     def _start_node(self):
         command = f'roslaunch {self.package_name} {self.launch_file} tool_name:={self.tool_name}  --{self.output}'
-        self.proc = subprocess.Popen(command, shell=True)
+        self.proc = subprocess.Popen(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT) # we hide all kind of output
 
     def _close_node(self):
         if self.proc is not None:
