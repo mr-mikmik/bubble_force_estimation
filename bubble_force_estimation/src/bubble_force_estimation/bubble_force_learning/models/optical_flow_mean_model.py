@@ -9,7 +9,7 @@ import numpy as np
 import os
 import sys
 
-from bubble_control.bubble_learning.models.aux.fc_module import FCModule
+from bubble_drawing.bubble_learning.models.aux.fc_module import FCModule
 
 
 class OpticalFlowMeanModel(pl.LightningModule):

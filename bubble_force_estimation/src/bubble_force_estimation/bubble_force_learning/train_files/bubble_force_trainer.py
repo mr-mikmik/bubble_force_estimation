@@ -1,7 +1,7 @@
 import torch
 
 
-from bubble_control.bubble_learning.train_files.parsed_trainer import ParsedTrainer
+from bubble_drawing.bubble_learning.train_files.parsed_trainer import ParsedTrainer
 
 # Datasets:
 from bubble_force_estimation.bubble_force_learning.datasets.bubble_force_dataset import BubbleForceDataset2States, BubbleForceDataset2StatesWithDeformations, BubbleForceDataset2StatesWithFixedNumberDeformations

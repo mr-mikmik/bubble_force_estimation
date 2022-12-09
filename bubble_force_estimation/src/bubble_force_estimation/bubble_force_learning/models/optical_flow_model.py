@@ -9,8 +9,8 @@ import numpy as np
 import os
 import sys
 
-from bubble_control.bubble_learning.models.aux.fc_module import FCModule
-from bubble_control.bubble_learning.models.aux.img_encoder import ImageEncoder
+from bubble_drawing.bubble_learning.models.aux.fc_module import FCModule
+from bubble_drawing.bubble_learning.models.aux.img_encoder import ImageEncoder
 
 
 class OpticalFlowModel(pl.LightningModule):
