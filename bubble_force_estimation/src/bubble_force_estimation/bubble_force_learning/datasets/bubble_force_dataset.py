@@ -1,8 +1,8 @@
 import numpy as np
 import torch
 
-from bubble_utils.bubble_datasets.bubble_dataset_base import BubbleDatasetBase
-from bubble_force_estimation.optical_flow.optical_flow import optical_flow, mean_optical_flow, optical_flow_pyr
+from bubble_tools.bubble_datasets import BubbleDatasetBase
+from bubble_force_estimation.optical_flow.optical_flow import optical_flow, optical_flow_pyr
 from bubble_force_estimation.optical_flow.compute_deformations import compute_deformations
 
 

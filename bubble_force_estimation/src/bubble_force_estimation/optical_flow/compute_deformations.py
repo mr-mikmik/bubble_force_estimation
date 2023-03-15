@@ -1,6 +1,6 @@
 
 from bubble_force_estimation.optical_flow.estimate_correspondences import estimate_correspondences
-from mmint_camera_utils.camera_utils.camera_utils import project_depth_image
+from mmint_tools.camera_tools.img_utils import project_depth_image
 
 
 def compute_deformations(img_1, img_2, depth_1, depth_2, flow, camera_matrix, return_point_coordinates=False):
