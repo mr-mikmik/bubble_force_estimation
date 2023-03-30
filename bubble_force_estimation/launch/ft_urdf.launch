@@ -21,7 +21,6 @@
 
 <!--    <param name="scene_urdf" command="rosparam get ft_description"/>-->
   <node name="load_urdf" pkg="urdf_to_scene" type="load_urdf" output="screen" required="false" launch-prefix="" ns="med">
-
   </node>
 
 

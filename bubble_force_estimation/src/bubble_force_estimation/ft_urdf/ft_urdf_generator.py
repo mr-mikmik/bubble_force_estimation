@@ -25,7 +25,7 @@ class FTURDFGenerator(object):
     def _start_node(self):
         command = f'roslaunch {self.package_name} {self.launch_file} tool_name:={self.tool_name}  --{self.output}'
         self.proc = subprocess.Popen(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT) # we hide all kind of output
-        time.sleep(2.0) # Give it some time to execute the launch file
+
     def _close_node(self):
         if self.proc is not None:
             self.proc.kill()
@@ -33,4 +33,16 @@ class FTURDFGenerator(object):
     def generate(self):
         self._close_node()
         self._start_node()
+
+    def __del__(self):
+        self._close_node()
+
+
+class FakeFTURDFGenerator(FTURDFGenerator):
+
+    def _start_node(self):
+        pass
+
+    def _close_node(self):
+        pass
 
