@@ -2,7 +2,7 @@
 <robot name="ftsensor_mount" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
 
-<!--    <xacro:include filename="$(find bubble_force_estimation)/urdf/ftsensor.urdf.xacro"/>-->
-    <xacro:include filename="$(find bubble_force_estimation)/urdf/ftsensor_tag_origin.urdf.xacro"/>
+    <xacro:include filename="$(find bubble_force_estimation)/urdf/ftsensor.urdf.xacro"/>
+<!--    <xacro:include filename="$(find bubble_force_estimation)/urdf/ftsensor_tag_origin.urdf.xacro"/>-->
     <xacro:ftsensor_xacro/>
 </robot>

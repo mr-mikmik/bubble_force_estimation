@@ -2,10 +2,15 @@
 
   <!-- launch ft sensor -->
 <!--  <include file="$(find netft_rdt_driver)/launch/netft.launch"/>-->
-    <arg name="tool_name" default="r7p5mm_ati_cylinder"/>
+    <arg name="tool_name" default="r10mm_ati_cylinder"/>
+
+
+    <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="0.562 0. 0.098 3.1415 0 0 med_base netft_base 100" />
+<!--    <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="0.562 0. 0.15 3.1415 0 0 med_base netft_base 100" />-->
+
 
   <!-- Allows users to have custom URDF -->
-    <arg name="model" default="$(find bubble_force_estimation)/urdf/ftsensor_tag_origin_fake.urdf.xacro"/>
+    <arg name="model" default="$(find bubble_force_estimation)/urdf/ftsensor_fake.urdf.xacro"/>
     <param name="scene_urdf" command="$(find xacro)/xacro $(arg model) tool_name:=$(arg tool_name)"/>
 
     <node pkg="robot_state_publisher" type="robot_state_publisher" name="ft_sensor_state_publisher">
@@ -22,6 +27,8 @@
 <!--    <param name="scene_urdf" command="rosparam get ft_description"/>-->
   <node name="load_urdf" pkg="urdf_to_scene" type="load_urdf" output="screen" required="false" launch-prefix="" ns="med">
   </node>
+
+
 
 
 </launch>
